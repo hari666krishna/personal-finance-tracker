@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../services/api";
 import toast from "react-hot-toast";
 
@@ -33,6 +33,11 @@ function Login() {
             localStorage.setItem(
                 "token",
                 response.data.token
+            );
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify(response.data.user)
             );
 
             toast.success("Login Successful!");
@@ -83,6 +88,8 @@ function Login() {
 
                     />
 
+
+
                     <input
 
                         type="password"
@@ -96,6 +103,18 @@ function Login() {
                         className="w-full border p-3 rounded-lg mb-6"
 
                     />
+                    <p className="text-center mt-7 text-gray-600">
+                        
+                        Don't have an account?
+
+                        <Link
+                            to="/register"
+                            className="text-blue-600 ml-1 hover:underline">
+                            
+                            Register
+                            
+                        </Link>
+                    </p>
 
                     <button
 

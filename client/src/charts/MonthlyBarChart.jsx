@@ -9,12 +9,9 @@ import {
 } from "recharts";
 
 function MonthlyBarChart({ data }) {
+  console.log("Monthly Chart Data:", data);
 
-  const chartData = data.map((item) => ({
-    month: `${item._id.month}/${item._id.year}`,
-    income: item.income,
-    expense: item.expense,
-  }));
+  const chartData = data;
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md">

@@ -1,30 +1,68 @@
 import { Link } from "react-router-dom";
 
-function Sidebar() {
+function Sidebar({ isOpen, closeMenu }) {
+
   return (
-    <div className="w-64 h-screen bg-blue-700 text-white p-6">
+    <>
+      <div
+        className={`
+          fixed md:static
+          top-0 left-0
+          min-h-screen
+          w-64
+          bg-blue-700
+          text-white
+          p-6
+          z-50
+          transform
+          transition-transform
+          duration-300
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0
+        `}
+      >
 
-      <h1 className="text-2xl font-bold mb-10">
-        Finance Tracker
-      </h1>
+        <button
+          className="md:hidden mb-6 text-2xl"
+          onClick={closeMenu}
+        >
+          ✕
+        </button>
 
-      <nav className="flex flex-col gap-4">
+        <h1 className="text-2xl font-bold mb-10">
+          Finance Tracker
+        </h1>
 
-        <Link to="/dashboard" className="hover:bg-blue-600 p-3 rounded">
-          Dashboard
-        </Link>
+        <nav className="flex flex-col gap-4">
 
-        <Link to="/transactions" className="hover:bg-blue-600 p-3 rounded">
-          Transactions
-        </Link>
+          <Link
+            to="/dashboard"
+            onClick={closeMenu}
+            className="hover:bg-blue-600 p-3 rounded"
+          >
+            Dashboard
+          </Link>
 
-        <Link to="/profile" className="hover:bg-blue-600 p-3 rounded">
-          Profile
-        </Link>
+          <Link
+            to="/transactions"
+            onClick={closeMenu}
+            className="hover:bg-blue-600 p-3 rounded"
+          >
+            Transactions
+          </Link>
 
-      </nav>
+          <Link
+            to="/profile"
+            onClick={closeMenu}
+            className="hover:bg-blue-600 p-3 rounded"
+          >
+            Profile
+          </Link>
 
-    </div>
+        </nav>
+
+      </div>
+    </>
   );
 }
 

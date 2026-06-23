@@ -1,4 +1,5 @@
 import Transaction from "../models/Transaction.js";
+import mongoose from "mongoose";
 
 export const getDashboardSummary = async (req, res) => {
 
@@ -101,25 +102,25 @@ export const getCategorySummary = async (req, res) => {
 
             {
                 $match: {
-                    user: req.user.id,
-                    type: "expense"
-                }
+                    user: new mongoose.Types.ObjectId(req.user.id),
+                    type: "expense",
+                },
             },
 
             {
                 $group: {
                     _id: "$category",
                     total: {
-                        $sum: "$amount"
-                    }
-                }
+                        $sum: "$amount",
+                    },
+                },
             },
 
             {
                 $sort: {
-                    total: -1
-                }
-            }
+                    total: -1,
+                },
+            },
 
         ]);
 
@@ -127,17 +128,18 @@ export const getCategorySummary = async (req, res) => {
 
             success: true,
 
-            data: summary
+            data: summary,
 
         });
 
     } catch (error) {
+        console.error(error);
 
         res.status(500).json({
 
             success: false,
 
-            message: error.message
+            message: error.message,
 
         });
 
@@ -146,103 +148,55 @@ export const getCategorySummary = async (req, res) => {
 };
 
 export const getMonthlyAnalytics = async (req, res) => {
+  try {
 
-    try {
+    const transactions = await Transaction.find({
+      user: req.user.id,
+    });
 
-        const analytics = await Transaction.aggregate([
+    const monthlyMap = {};
 
-            {
-                $match: {
-                    user: req.user._id || req.user.id
-                }
-            },
+    transactions.forEach((transaction) => {
 
-            {
-                $group: {
+      const date = new Date(transaction.date);
 
-                    _id: {
+      const month = date.toLocaleString("default", {
+        month: "short",
+      });
 
-                        year: {
-                            $year: "$date"
-                        },
+      if (!monthlyMap[month]) {
+        monthlyMap[month] = {
+          month,
+          income: 0,
+          expense: 0,
+        };
+      }
 
-                        month: {
-                            $month: "$date"
-                        }
+      if (transaction.type === "income") {
+        monthlyMap[month].income += transaction.amount;
+      } else {
+        monthlyMap[month].expense += transaction.amount;
+      }
 
-                    },
+    });
 
-                    income: {
+    const analytics = Object.values(monthlyMap);
 
-                        $sum: {
+    console.log("Analytics:", analytics);
 
-                            $cond: [
+    res.status(200).json({
+      success: true,
+      data: analytics,
+    });
 
-                                {
-                                    $eq: ["$type", "income"]
-                                },
+  } catch (error) {
 
-                                "$amount",
+    console.error(error);
 
-                                0
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
 
-                            ]
-
-                        }
-
-                    },
-
-                    expense: {
-
-                        $sum: {
-
-                            $cond: [
-
-                                {
-                                    $eq: ["$type", "expense"]
-                                },
-
-                                "$amount",
-
-                                0
-
-                            ]
-
-                        }
-
-                    }
-
-                }
-
-            },
-
-            {
-                $sort: {
-                    "_id.year": 1,
-                    "_id.month": 1
-                }
-            }
-
-        ]);
-
-        res.status(200).json({
-
-            success: true,
-
-            data: analytics
-
-        });
-
-    } catch (error) {
-
-        res.status(500).json({
-
-            success: false,
-
-            message: error.message
-
-        });
-
-    }
-
+  }
 };

@@ -57,7 +57,7 @@ function TransactionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-6 rounded-xl shadow-md"
+      className="bg-white p-4 md:p-6 rounded-xl shadow-md w-full"
     >
 
       <h2 className="text-xl font-bold mb-4">
@@ -111,7 +111,7 @@ function TransactionForm({
 
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white p-3 rounded"
+        className="w-full bg-blue-600 text-white py-3 px-4 rounded text-center wrap-break-words"
           >
               {
                   editingTransaction
